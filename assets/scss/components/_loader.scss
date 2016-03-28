@@ -1,0 +1,28 @@
+body {
+  &.is-loading {
+    overflow: hidden;
+
+    #loading {
+      position: fixed;
+      z-index: 100;
+      width: 100%;
+      height: 100%;
+      color: $dark-gray;
+      background: $white;
+      transition: all .5s ease;
+      @extend .animated, .fadeInDown;
+
+      &.is-loading {
+        &:after {
+          position: absolute;
+          top: 30%;
+          width: 100%;
+          content: "Loading...";
+          text-align: center;
+          transition: all .5s ease;
+          @extend .animated, .fadeInDown;
+        }
+      }
+    }
+  }
+}

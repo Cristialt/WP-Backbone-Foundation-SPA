@@ -1,0 +1,10 @@
+.DS_Store
+*.sass-cache*
+*.scssc
+*.log
+*.css
+node_modules/
+assets/stylesheets/
+assets/components/
+assets/javascript/vendor/
+assets/javascript/app.js
