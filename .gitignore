@@ -3,6 +3,7 @@
 *.scssc
 *.log
 *.css
+.idea/
 node_modules/
 assets/stylesheets/
 assets/components/

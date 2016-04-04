@@ -29,8 +29,12 @@ var PATHS = {
     'assets/components/fontawesome/scss'
   ],
   javascript: [
+    ///////////////////////////////////////////////////////////////
+    // Note that the main libs, jQuery, Underscore and Backbone
+    // are loaded by Wordpress and the REST api respectively
+
     // jQuery
-    'assets/components/jquery/dist/jquery.js',
+    // 'assets/components/jquery/dist/jquery.js',
 
     //  What Input
     'assets/components/what-input/what-input.js',
@@ -67,11 +71,11 @@ var PATHS = {
     'assets/components/what-input/what-input.js',
 
     // Underscore & Backbone
-    'assets/components/underscore/underscore.js',
-    'assets/components/backbone/backbone.js',
+    // 'assets/components/underscore/underscore.js',
+    // 'assets/components/backbone/backbone.js',
     'assets/components/backbone.localstorage/backbone.localstorage.js'
 
-    // Include own custom script(s) when in production
+    // Include own custom script
     // ,'assets/javascript/spa.js'
   ],
   phpcs: [
@@ -110,68 +114,68 @@ gulp.task('sass', function() {
   var minifycss = $.if(isProduction, $.minifyCss());
 
   return gulp.src('assets/scss/app.scss')
-    .pipe($.sourcemaps.init())
-    .pipe($.sass({
-      includePaths: PATHS.sass
-    }))
-    .on('error', $.notify.onError({
+      .pipe($.sourcemaps.init())
+      .pipe($.sass({
+        includePaths: PATHS.sass
+      }))
+      .on('error', $.notify.onError({
         message: "<%= error.message %>",
         title: "Sass Error"
-    }))
-    .pipe($.autoprefixer({
-      browsers: COMPATIBILITY
-    }))
-    .pipe(minifycss)
-    .pipe($.if(!isProduction, $.sourcemaps.write('.')))
-    .pipe(gulp.dest('assets/stylesheets'))
-    .pipe(browserSync.stream({match: '**/*.css'}));
+      }))
+      .pipe($.autoprefixer({
+        browsers: COMPATIBILITY
+      }))
+      .pipe(minifycss)
+      .pipe($.if(!isProduction, $.sourcemaps.write('.')))
+      .pipe(gulp.dest('assets/stylesheets'))
+      .pipe(browserSync.stream({match: '**/*.css'}));
 });
 
 // Lint all JS files in custom directory
 gulp.task('lint', function() {
   return gulp.src('assets/javascript/custom/*.js')
-    .pipe($.jshint())
-    .pipe($.notify(function (file) {
-      if (file.jshint.success) {
-        return false;
-      }
-
-      var errors = file.jshint.results.map(function (data) {
-        if (data.error) {
-          return "(" + data.error.line + ':' + data.error.character + ') ' + data.error.reason;
+      .pipe($.jshint())
+      .pipe($.notify(function (file) {
+        if (file.jshint.success) {
+          return false;
         }
-      }).join("\n");
-      return file.relative + " (" + file.jshint.results.length + " errors)\n" + errors;
-    }));
+
+        var errors = file.jshint.results.map(function (data) {
+          if (data.error) {
+            return "(" + data.error.line + ':' + data.error.character + ') ' + data.error.reason;
+          }
+        }).join("\n");
+        return file.relative + " (" + file.jshint.results.length + " errors)\n" + errors;
+      }));
 });
 
 // Combine JavaScript into one file
 // In production, the file is minified
 gulp.task('javascript', function() {
   var uglify = $.uglify()
-    .on('error', $.notify.onError({
-      message: "<%= error.message %>",
-      title: "Uglify JS Error"
-    }));
+      .on('error', $.notify.onError({
+        message: "<%= error.message %>",
+        title: "Uglify JS Error"
+      }));
 
   return gulp.src(PATHS.javascript)
-    .pipe($.sourcemaps.init())
-    .pipe($.babel())
-    .pipe($.concat('app.js', {
-      newLine:'\n;'
-    }))
-    .pipe($.if(isProduction, uglify))
-    .pipe($.if(!isProduction, $.sourcemaps.write()))
-    .pipe(gulp.dest('assets/javascript'))
-    .pipe(browserSync.stream());
+      .pipe($.sourcemaps.init())
+      .pipe($.babel())
+      .pipe($.concat('app.js', {
+        newLine:'\n;'
+      }))
+      .pipe($.if(isProduction, uglify))
+      .pipe($.if(!isProduction, $.sourcemaps.write()))
+      .pipe(gulp.dest('assets/javascript'))
+      .pipe(browserSync.stream());
 });
 
 // Copy task
 gulp.task('copy', function() {
   // Motion UI
   var motionUi = gulp.src('assets/components/motion-ui/**/*.*')
-    .pipe($.flatten())
-    .pipe(gulp.dest('assets/javascript/vendor/motion-ui'));
+      .pipe($.flatten())
+      .pipe(gulp.dest('assets/javascript/vendor/motion-ui'));
 
   // What Input
   var whatInput = gulp.src('assets/components/what-input/**/*.*')
@@ -193,39 +197,39 @@ gulp.task('package', ['build'], function() {
   var title = pkg.name + '_' + time + '.zip';
 
   return gulp.src(PATHS.pkg)
-    .pipe($.zip(title))
-    .pipe(gulp.dest('packaged'));
+      .pipe($.zip(title))
+      .pipe(gulp.dest('packaged'));
 });
 
 // Build task
 // Runs copy then runs sass & javascript in parallel
 gulp.task('build', ['clean'], function(done) {
   sequence('copy',
-          ['sass', 'javascript', 'lint'],
-          done);
+      ['sass', 'javascript', 'lint'],
+      done);
 });
 
 // PHP Code Sniffer task
 gulp.task('phpcs', function() {
   return gulp.src(PATHS.phpcs)
-    .pipe($.phpcs({
-      bin: 'wpcs/vendor/bin/phpcs',
-      standard: './codesniffer.ruleset.xml',
-      showSniffCode: true,
-    }))
-    .pipe($.phpcs.reporter('log'));
+      .pipe($.phpcs({
+        bin: 'wpcs/vendor/bin/phpcs',
+        standard: './codesniffer.ruleset.xml',
+        showSniffCode: true,
+      }))
+      .pipe($.phpcs.reporter('log'));
 });
 
 // PHP Code Beautifier task
 gulp.task('phpcbf', function () {
   return gulp.src(PATHS.phpcs)
-  .pipe($.phpcbf({
-    bin: 'wpcs/vendor/bin/phpcbf',
-    standard: './codesniffer.ruleset.xml',
-    warningSeverity: 0
-  }))
-  .on('error', $.util.log)
-  .pipe(gulp.dest('.'));
+      .pipe($.phpcbf({
+        bin: 'wpcs/vendor/bin/phpcbf',
+        standard: './codesniffer.ruleset.xml',
+        warningSeverity: 0
+      }))
+      .on('error', $.util.log)
+      .pipe(gulp.dest('.'));
 });
 
 // Clean task
@@ -236,16 +240,16 @@ gulp.task('clean', function(done) {
 // Clean JS
 gulp.task('clean:javascript', function() {
   return del([
-      'assets/javascript/app.js'
-    ]);
+    'assets/javascript/app.js'
+  ]);
 });
 
 // Clean CSS
 gulp.task('clean:css', function() {
   return del([
-      'assets/stylesheets/app.css',
-      'assets/stylesheets/app.css.map'
-    ]);
+    'assets/stylesheets/app.css',
+    'assets/stylesheets/app.css.map'
+  ]);
 });
 
 // Default gulp task
@@ -261,15 +265,13 @@ gulp.task('default', ['build', 'browser-sync'], function() {
 
   // Sass Watch
   gulp.watch(['assets/scss/**/*.scss'], ['clean:css', 'sass'])
-    .on('change', function(event) {
-      logFileChange(event);
-        browserSync.reload();
-    });
+      .on('change', function(event) {
+        logFileChange(event);
+      });
 
   // JS Watch
   gulp.watch(['gulpfile.js','assets/javascript/custom/**/*.js'], ['clean:javascript', 'javascript', 'lint'])
-    .on('change', function(event) {
-      logFileChange(event);
-        browserSync.reload();
-    });
+      .on('change', function(event) {
+        logFileChange(event);
+      });
 });

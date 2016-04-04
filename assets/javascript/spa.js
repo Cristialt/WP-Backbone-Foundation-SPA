@@ -6,32 +6,31 @@
  *
  */
 
-(function () { "use strict";
+(function ($) { "use strict";
 
     // Global class
-    var BB = BB || {};
+    var BB = wp.api.loadPromise;
+
+    console.log('Initialized the app using jQuery ' + $.fn.jquery + ', Underscore ' + _.VERSION + ', Backbone ' + Backbone.VERSION + 'and Foundation ', Foundation.version);
+    BB.done(function (data) {
+        // here's the api :)
+        console.log(data);
+    });
 
     // URIs
     var rootURL = Backbone.history.location.origin;
     var themeURL = rootURL + '/wp-content/themes/backbone-spa/';
-    
-    console.log(themeURL);
 
     // Top-level variable references in our Underscore.js templates
     _.templateSettings.variable = "backbone-spa";
-
-    // REST API root url for Ajax driven calls...
-    $.ajaxPrefilter(function (options, originalOptions, jqXHR) {
-        options.url = rootURL + '/wp/v2/' + options.url;
-    });
 
 
 
     // MODELS, COLLECTIONS
 
-    // Post Model -> Get the post by ID
-    BB.Post = Backbone.Model.extend({
-        url: 'posts'
+    // Posts example
+    BB.Post = Backbone.Collection.extend({
+        url: '/wp-json/wp/v2/posts'
     });
 
 
@@ -64,6 +63,13 @@
 
         render: function () {
             this.$el.html(this.template);
+
+            this.posts.fetch({
+                success: function (model, response, options) {
+                    console.log(response);
+                }
+            });
+
             return this.$el;
         }
     });
@@ -148,7 +154,7 @@
                     footer.css('margin-top', wh + 'px');
                 }
             });
-            
+
             // iframe wrappers
             $( 'iframe[src*="youtube.com"]').wrap("<div class='flex-video widescreen'/>");
             $( 'iframe[src*="vimeo.com"]').wrap("<div class='flex-video widescreen vimeo'/>");
@@ -171,4 +177,4 @@
             }, 300);
         }
     }
-})();
+})(jQuery);
