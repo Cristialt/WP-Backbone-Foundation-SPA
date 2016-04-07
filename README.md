@@ -1,7 +1,10 @@
 # Backbone SPA for Wordpress
 ---
 Backbone-spa is a starter Wordpress theme built using Foundation-Sites, jQuery, Underscore, Backbone, Sass, connecting to the backend through a RESTful interface (http://v2.wp-api.org).
+
 A very clean, lightweight and straight-forward solution for someone that needs to build a single page app using Backbone that connects to a RESTful API (I used WP REST API (http://v2.wp-api.org/) ) under Wordpress. 
+
+In `assets/javascript/spa.js` you'll find the Backbone app initialized as well as the API wire to the Wordpress WP-REST-API plugin. That should give you a good starting point for developing a RESTful Single-Page Application with Backbone and Wordpress. The UI framework is Foundation-sites 6.2.x but you can choose the one you are most confortable with. 
 
 
 ## Requirements
